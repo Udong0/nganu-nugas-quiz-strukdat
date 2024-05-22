@@ -2,123 +2,118 @@
 using namespace std;
 
 typedef struct MyNode {
-	int data;
-	struct MyNode *left;
-	struct MyNode *right;
+    int data;
+    struct MyNode *left;
+    struct MyNode *right;
 } Node;
 
 Node *node;
 
 void init() {
-	node = nullptr;
+    node = nullptr;
 }
 
 void clear(Node **node) {
-	*node = nullptr;
+    *node = nullptr;
 }
 
 int isEmpty(Node *node) {
-	if (node == nullptr) return 1;
-	else return 0;
+    return node == nullptr;
 }
 
 void insert(Node **root, int newData) {
-	if ((*root) == nullptr) {
-		Node *newNode;
-		newNode = new Node;
-		newNode -> data = newData;
-		newNode -> left = nullptr;
-		newNode -> right = nullptr;
-		(*root) = newNode;
-		(*root) -> left = nullptr;
-		(*root) -> right = nullptr;
-		printf("%d has been inserted by insert()\n", newData);
-	} else if (newData < (*root) -> data) {
-		insert(&(*root) -> left, newData);
-	} else if (newData > (*root) -> data) {
-		insert(&(*root) -> right, newData);
-	} else if (newData == (*root) -> data) {
-		printf("%d has existed in the tree\n", newData);
-	}
+    if (*root == nullptr) {
+        Node *newNode = new Node;
+        newNode->data = newData;
+        newNode->left = nullptr;
+        newNode->right = nullptr;
+        *root = newNode;
+        printf("%d has been inserted by insert()\n", newData);
+    } else if (newData < (*root)->data) {
+        insert(&(*root)->left, newData);
+    } else if (newData > (*root)->data) {
+        insert(&(*root)->right, newData);
+    } else {
+        printf("%d has existed in the tree\n", newData);
+    }
 }
 
 void preOrder(Node *root) {
-	if (root != nullptr) {
-		printf("%d ", root -> data);
-		preOrder(root -> left);
-		preOrder(root -> right);
-	}
+    if (root != nullptr) {
+        printf("%d ", root->data);
+        preOrder(root->left);
+        preOrder(root->right);
+    }
 }
 
 void inOrder(Node *root) {
-	if (root != nullptr) {
-		inOrder(root -> left);
-		printf("%d ", root -> data);
-		inOrder(root -> right);
-	}
+    if (root != nullptr) {
+        inOrder(root->left);
+        printf("%d ", root->data);
+        inOrder(root->right);
+    }
 }
 
 void postOrder(Node *root) {
-	if (root != nullptr) {
-		postOrder(root -> left);
-		postOrder(root -> right);
-		printf("%d ", root -> data);
-	}
+    if (root != nullptr) {
+        postOrder(root->left);
+        postOrder(root->right);
+        printf("%d ", root->data);
+    }
 }
 
 typedef struct myQNode {
-	Node *node;
-	myQNode *next;
+    Node *node;
+    myQNode *next;
 } QNode;
 
 typedef struct myQueue {
-	QNode *front;
-	QNode *rear;
+    QNode *front;
+    QNode *rear;
 } Queue;
 
 Queue *createQ() {
-	Queue *queue = new Queue;
-	queue -> front = nullptr;
-	queue -> rear = nullptr;
-	return queue;
+    Queue *queue = new Queue;
+    queue->front = nullptr;
+    queue->rear = nullptr;
+    return queue;
 }
 
 int isEmptyQ(Queue *queue) {
-	return queue -> front == nullptr;
+    return queue->front == nullptr;
 }
 
 void enQueue(Queue *queue, Node *newNode) {
-	QNode *qNode;
-	qNode = new QNode;
-	qNode -> node = newNode;
-	qNode -> next = nullptr;
-	if (isEmptyQ(queue)) {
-		queue -> front = qNode;
-		queue -> rear = qNode;
-	} else {
-		queue -> rear -> next = qNode;
-		queue -> rear = qNode;
-	}
+    QNode *qNode = new QNode;
+    qNode->node = newNode;
+    qNode->next = nullptr;
+    if (isEmptyQ(queue)) {
+        queue->front = qNode;
+        queue->rear = qNode;
+    } else {
+        queue->rear->next = qNode;
+        queue->rear = qNode;
+    }
 }
 
 Node *deQueue(Queue *queue) {
-	if (isEmptyQ(queue)) {
-		printf("Queue is empty.\n");
-		return nullptr;
-	}
-	QNode *temp = queue -> front;
-	Node *node = temp -> node;
-	queue -> front = queue -> front -> next;
-	free(temp);
-	return node;
-}
-
-Node *getFront(Queue *queue) {
-    if (queue -> front == nullptr) {
+    if (isEmptyQ(queue)) {
         printf("Queue is empty.\n");
         return nullptr;
     }
-    return queue -> front -> node;
+    QNode *temp = queue->front;
+    Node *node = temp->node;
+    queue->front = queue->front->next;
+    delete temp;
+    return node;
+}
+
+Node *getFront(Queue *queue) {
+    if (queue->front == nullptr) {
+        printf("Queue is empty.\n");
+        return nullptr;
+    }
+    return queue->front->node;
 }
 
 void levelOrder(Node *root) {
@@ -126,20 +121,19 @@ void levelOrder(Node *root) {
         printf("Tree is empty.\n");
         return;
     }
-    Queue *queue = new Queue;
-	queue = createQ();
+    Queue *queue = createQ();
     enQueue(queue, root);
     while (!isEmptyQ(queue)) {
         Node *n = getFront(queue);
         // Visit the node
-        printf("%d ", n -> data);
-        if (n -> left != nullptr) {
-        	// Enqueue left child if exists
-            enQueue(queue, n -> left);
+        printf("%d ", n->data);
+        if (n->left != nullptr) {
+            // Enqueue left child if exists
+            enQueue(queue, n->left);
         }
-        if (n -> right != nullptr) {
-        	// Enqueue right child if exists
-            enQueue(queue, n -> right);
+        if (n->right != nullptr) {
+            // Enqueue right child if exists
+            enQueue(queue, n->right);
         }
         // Dequeue the processed node
         deQueue(queue);
@@ -147,203 +141,200 @@ void levelOrder(Node *root) {
 }
 
 Node *search(Node *root, int data) {
-	if (root == nullptr) {
-		printf("%d cannot be found by search()\n", data);
-		return nullptr;
-	} else if (data < root -> data) {
-		return search(root -> left, data);
-	} else if (data > root -> data) {
-		return search(root -> right, data);
-	} else if (data == root -> data) {
-		printf("%d has been found by search()\n", data);
-		return root;
-	}
+    if (root == nullptr) {
+        printf("%d cannot be found by search()\n", data);
+        return nullptr;
+    } else if (data < root->data) {
+        return search(root->left, data);
+    } else if (data > root->data) {
+        return search(root->right, data);
+    } else {
+        printf("%d has been found by search()\n", data);
+        return root;
+    }
 }
 
 int count(Node *root) {
-	if (root == nullptr) {
-		return 0;
-	} else {
-		return count(root -> left) + count(root -> right) + 1;
-	}
+    if (root == nullptr) {
+        return 0;
+    } else {
+        return count(root->left) + count(root->right) + 1;
+    }
 }
 
 int height(Node *root) {
-	if (root == nullptr) {
-		return -1;
-	}
-	int u = height(root -> left);
-	int v = height(root -> right);
-	if (u > v) {
-		return u + 1;
-	} else {
-		return v + 1;
-	}
+    if (root == nullptr) {
+        return -1;
+    }
+    int u = height(root->left);
+    int v = height(root->right);
+    return (u > v) ? u + 1 : v + 1;
 }
 
 Node *min(Node *root) {
-	if (root == nullptr) {
-		return nullptr;
-	} else if (root -> left == nullptr) {
-		return root;
-	} else {
-		return min(root -> left);
-	}
+    if (root == nullptr) {
+        return nullptr;
+    } else if (root->left == nullptr) {
+        return root;
+    } else {
+        return min(root->left);
+    }
 }
 
 Node *max(Node *root) {
-	if (root == nullptr) {
-		return nullptr;
-	} else if (root -> right == nullptr) {
-		return root;
-	} else {
-		return max(root -> right);
-	}
+    if (root == nullptr) {
+        return nullptr;
+    } else if (root->right == nullptr) {
+        return root;
+    } else {
+        return max(root->right);
+    }
 }
 
 void leaf(Node *root) {
-	if (root == nullptr) {
-		printf("Tree is empty.\n");
-	}
-	if (root -> left != nullptr) {
-		leaf(root -> left);
-	}
-	if (root -> right != nullptr) {
-		leaf(root -> right);
-	}
-	if (root -> left == nullptr && root -> right == nullptr) {
-		printf("%d ", root -> data);
-	}
+    if (root == nullptr) {
+        printf("Tree is empty.\n");
+    }
+    if (root->left != nullptr) {
+        leaf(root->left);
+    }
+    if (root->right != nullptr) {
+        leaf(root->right);
+    }
+    if (root->left == nullptr && root->right == nullptr) {
+        printf("%d ", root->data);
+    }
 }
 
 void printDepthFirst(Node *root) {
-    // Base case: if the node is null, return.
-    if (root == NULL) {
+    if (root == nullptr) {
         return;
     }
-
-    // Print the current node's data.
     cout << root->data << " ";
-    
-    // Recur on the left subtree.
     printDepthFirst(root->left);
-    
-    // Recur on the right subtree.
     printDepthFirst(root->right);
 }
 
 void printKthLevel(Node *root, int k) {
-    // Base case: if the node is null or k is less than 0, return.
-    if (root == NULL || k < 0) {
+    if (root == nullptr || k < 0) {
         return;
     }
-
-    // If k is 0, print the current node's data.
     if (k == 0) {
         cout << root->data << " ";
         return;
     }
-
-    // Recur for left and right subtrees with k-1
     printKthLevel(root->left, k-1);
     printKthLevel(root->right, k-1);
 }
 
 int sumOfNodes(Node *root) {
-    // Base case: if the node is null, return 0.
-    if (root == NULL) {
+    if (root == nullptr) {
         return 0;
     }
-
-    // Recursively calculate the sum of nodes in the left and right subtrees.
     int leftSum = sumOfNodes(root->left);
     int rightSum = sumOfNodes(root->right);
-    
-    // Return the sum of the current node's data and the sums of the left and right subtrees.
     return root->data + leftSum + rightSum;
 }
 
 void triple(Node *root) {
-    // Base case: if the node is null, return.
-    if (root == NULL) {
+    if (root == nullptr) {
         return;
     }
-
-    // Multiply the current node's data by three.
     root->data *= 3;
-    
-    // Recur for the left and right subtrees.
     triple(root->left);
     triple(root->right);
 }
+
 void inorderTraversal(Node *root) {
-    if (root == NULL) {
+    if (root == nullptr) {
         return;
     }
     inorderTraversal(root->left);
     cout << root->data << " ";
     inorderTraversal(root->right);
 }
+
 void mirror(Node *root) {
-    // Base case: if the node is null, return.
-    if (root == NULL) {
+    if (root == nullptr) {
         return;
     }
-
-    // Recursively create mirror images of the left and right subtrees.
     mirror(root->left);
     mirror(root->right);
-
-    // Swap the left and right pointers to create the mirror image.
-    Node* temp = root->left;
+    Node *temp = root->left;
     root->left = root->right;
     root->right = temp;
 }
+//8
+Node *findParent(Node *root, int childData) {
+    // Base case: if the tree is empty or the root itself is the child, return nullptr
+    if (root == nullptr || root->data == childData) {
+        return nullptr;
+    }
 
+    // If either the left or right child of the current node is the child, return the current node
+    if ((root->left != nullptr && root->left->data == childData) ||
+        (root->right != nullptr && root->right->data == childData)) {
+        return root;
+    }
+
+    // Recur to the left subtree
+    Node *leftResult = findParent(root->left, childData);
+    if (leftResult != nullptr) {
+        return leftResult;
+    }
+
+    // Recur to the right subtree
+    return findParent(root->right, childData);
+}
 
 int main() {
-
-	Node *root;
-	root = nullptr;
+    Node *root;
+    root = nullptr;
 
     printf("\n\nClear the tree ...\n");
-	clear(&root);
-	printf("Build a tree ...\n");
-	insert(&root, 6);
-	insert(&root, 3);
-	insert(&root, 10);
-	insert(&root, 1);
-	insert(&root, 5);
-	insert(&root, 7);
-	insert(&root, 8);
-	insert(&root, 9);
-	//1.  Print depth-first traversal
+    clear(&root);
+    printf("Build a tree ...\n");
+    insert(&root, 6);
+    insert(&root, 3);
+    insert(&root, 10);
+    insert(&root, 1);
+    insert(&root, 5);
+    insert(&root, 7);
+    insert(&root, 8);
+    insert(&root, 9);
+
+    // 1. Print depth-first traversal
     printDepthFirst(root);
-    //2. 
+    
+    // 2. Print nodes at level k
     int k = 2;
-    cout <<endl<< "Nodes at level " << k << ": ";
+    cout << endl << "Nodes at level " << k << ": ";
     printKthLevel(root, k);
     
-    //3. Calculate and print the sum of all nodes
+    // 3. Calculate and print the sum of all nodes
     int sum = sumOfNodes(root);
-    cout <<endl<< "Sum of all nodes: " << sum << endl;
+    cout << endl << "Sum of all nodes: " << sum << endl;
     
-    //4. Triple all nodes
+    // 4. Triple all nodes
     triple(root);
-
     cout << "Tree after tripling nodes (in-order traversal): ";
     inorderTraversal(root);
     cout << endl;
     
-    //5. Create mirror image
+    // 5. Create mirror image
     mirror(root);
-
     cout << "Mirror image tree (in-order traversal): ";
     inorderTraversal(root);
     cout << endl;
-    
-    
+
+    // 8. Find the parent of a given child node
+    int childData = 30;
+    Node *parent = findParent(root, childData);
+    if (parent != nullptr) {
+        cout << "Parent of node with data " << childData << " is: " << parent->data << endl;
+    } else {
+        cout << "Parent of node with data " << childData << " is not found." << endl;
+    }
     
     return 0;
 }
-
