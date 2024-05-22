@@ -189,6 +189,7 @@ bool isBalancedHelper(Node *root, int &height) {
 
     return true;
 }
+//6
 bool isBalanced(Node *root) {
     int height;
     return isBalancedHelper(root, height);
@@ -228,7 +229,15 @@ void leaf(Node *root) {
         printf("%d ", root->data);
     }
 }
-
+void inorderTraversal(Node *root) {
+    if (root == nullptr) {
+        return;
+    }
+    inorderTraversal(root->left);
+    cout << root->data << " ";
+    inorderTraversal(root->right);
+}
+//1
 void printDepthFirst(Node *root) {
     if (root == nullptr) {
         return;
@@ -237,7 +246,7 @@ void printDepthFirst(Node *root) {
     printDepthFirst(root->left);
     printDepthFirst(root->right);
 }
-
+//2
 void printKthLevel(Node *root, int k) {
     if (root == nullptr || k < 0) {
         return;
@@ -249,7 +258,7 @@ void printKthLevel(Node *root, int k) {
     printKthLevel(root->left, k-1);
     printKthLevel(root->right, k-1);
 }
-
+//3
 int sumOfNodes(Node *root) {
     if (root == nullptr) {
         return 0;
@@ -258,7 +267,7 @@ int sumOfNodes(Node *root) {
     int rightSum = sumOfNodes(root->right);
     return root->data + leftSum + rightSum;
 }
-
+//4
 void triple(Node *root) {
     if (root == nullptr) {
         return;
@@ -267,16 +276,7 @@ void triple(Node *root) {
     triple(root->left);
     triple(root->right);
 }
-
-void inorderTraversal(Node *root) {
-    if (root == nullptr) {
-        return;
-    }
-    inorderTraversal(root->left);
-    cout << root->data << " ";
-    inorderTraversal(root->right);
-}
-
+//5
 void mirror(Node *root) {
     if (root == nullptr) {
         return;
@@ -288,24 +288,6 @@ void mirror(Node *root) {
     root->right = temp;
 }
 
-Node *findParent(Node *root, int childData) {
-    if (root == nullptr || root->data == childData) {
-        return nullptr;
-    }
-
-    if ((root->left != nullptr && root->left->data == childData) ||
-        (root->right != nullptr && root->right->data == childData)) {
-        return root;
-    }
-
-    Node *leftResult = findParent(root->left, childData);
-    if (leftResult != nullptr) {
-        return leftResult;
-    }
-
-    return findParent(root->right, childData);
-}
-
 Node *minValueNode(Node *node) {
     Node *current = node;
     while (current && current->left != nullptr) {
@@ -313,7 +295,7 @@ Node *minValueNode(Node *node) {
     }
     return current;
 }
-
+//7
 Node *delNode(Node *root, int delData) {
     if (root == nullptr) {
         return root;
@@ -343,6 +325,26 @@ Node *delNode(Node *root, int delData) {
     return root;
 }
 
+//8
+Node *findParent(Node *root, int childData) {
+    if (root == nullptr || root->data == childData) {
+        return nullptr;
+    }
+
+    if ((root->left != nullptr && root->left->data == childData) ||
+        (root->right != nullptr && root->right->data == childData)) {
+        return root;
+    }
+
+    Node *leftResult = findParent(root->left, childData);
+    if (leftResult != nullptr) {
+        return leftResult;
+    }
+
+    return findParent(root->right, childData);
+}
+
+//9
 Node *findChild(Node *root, int parentData) {
     if (root == nullptr || root->data == parentData) {
         return nullptr;
@@ -364,7 +366,7 @@ Node *findChild(Node *root, int parentData) {
     }
     return nullptr;
 }
-
+//10
 void convertToDLLHelper(Node *root, Node **head, Node **prev) {
     if (root == nullptr) {
         return;
@@ -444,12 +446,12 @@ int main() {
 		cout << "The tree is " << (balanced ? "balanced" : "not balanced") << endl;
 
 		// 7. Delete a node
-		int delData = 7;
+		int delData = 21;
 		root = delNode(root, delData);
 		cout << "Tree after deleting " << delData << " (in-order traversal): ";
 		inorderTraversal(root);
 		cout << endl;
-
+    
 		// 8. Find the parent of a given child node
 		int childData = 30;
 		Node *parent = findParent(root, childData);
@@ -460,7 +462,7 @@ int main() {
 		}
 
 		// 9. Find the children node of a given parent data.
-		int parentData = 3;
+		int parentData = 18;
 		Node *child = findChild(root, parentData);
 		if (child != nullptr) {
    		cout << "Child of node with data " << parentData << " is: " << child->data << endl;
