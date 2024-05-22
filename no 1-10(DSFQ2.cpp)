@@ -125,17 +125,13 @@ void levelOrder(Node *root) {
     enQueue(queue, root);
     while (!isEmptyQ(queue)) {
         Node *n = getFront(queue);
-        // Visit the node
         printf("%d ", n->data);
         if (n->left != nullptr) {
-            // Enqueue left child if exists
             enQueue(queue, n->left);
         }
         if (n->right != nullptr) {
-            // Enqueue right child if exists
             enQueue(queue, n->right);
         }
-        // Dequeue the processed node
         deQueue(queue);
     }
 }
@@ -169,6 +165,33 @@ int height(Node *root) {
     int u = height(root->left);
     int v = height(root->right);
     return (u > v) ? u + 1 : v + 1;
+}
+
+bool isBalancedHelper(Node *root, int &height) {
+    if (root == nullptr) {
+        height = -1;
+        return true; 
+    }
+
+    int leftHeight, rightHeight;
+    bool leftBalanced = isBalancedHelper(root->left, leftHeight);
+    bool rightBalanced = isBalancedHelper(root->right, rightHeight);
+
+    height = std::max(leftHeight, rightHeight) + 1;
+
+    if (!leftBalanced || !rightBalanced) {
+        return false; 
+    }
+
+    if (std::abs(leftHeight - rightHeight) > 1) {
+        return false; 
+    }
+
+    return true;
+}
+bool isBalanced(Node *root) {
+    int height;
+    return isBalancedHelper(root, height);
 }
 
 Node *min(Node *root) {
@@ -264,28 +287,117 @@ void mirror(Node *root) {
     root->left = root->right;
     root->right = temp;
 }
-//8
+
 Node *findParent(Node *root, int childData) {
-    // Base case: if the tree is empty or the root itself is the child, return nullptr
     if (root == nullptr || root->data == childData) {
         return nullptr;
     }
 
-    // If either the left or right child of the current node is the child, return the current node
     if ((root->left != nullptr && root->left->data == childData) ||
         (root->right != nullptr && root->right->data == childData)) {
         return root;
     }
 
-    // Recur to the left subtree
     Node *leftResult = findParent(root->left, childData);
     if (leftResult != nullptr) {
         return leftResult;
     }
 
-    // Recur to the right subtree
     return findParent(root->right, childData);
 }
+
+Node *minValueNode(Node *node) {
+    Node *current = node;
+    while (current && current->left != nullptr) {
+        current = current->left;
+    }
+    return current;
+}
+
+Node *delNode(Node *root, int delData) {
+    if (root == nullptr) {
+        return root;
+    }
+    
+    if (delData < root->data) {
+        root->left = delNode(root->left, delData);
+    } 
+    else if (delData > root->data) {
+        root->right = delNode(root->right, delData);
+    } 
+    else {
+        if (root->left == nullptr) {
+            Node *temp = root->right;
+            delete root;
+            return temp;
+        } else if (root->right == nullptr) {
+            Node *temp = root->left;
+            delete root;
+            return temp;
+        }
+
+        Node *temp = minValueNode(root->right);
+        root->data = temp->data;
+        root->right = delNode(root->right, temp->data);
+    }
+    return root;
+}
+
+Node *findChild(Node *root, int parentData) {
+    if (root == nullptr || root->data == parentData) {
+        return nullptr;
+    }
+    if (root->left != nullptr && root->left->data == parentData) {
+        return root->left;
+    }
+    if (root->right != nullptr && root->right->data == parentData) {
+        return root->right;
+    }
+
+    Node *leftChild = findChild(root->left, parentData);
+    if (leftChild != nullptr) {
+        return leftChild;
+    }
+    Node *rightChild = findChild(root->right, parentData);
+    if (rightChild != nullptr) {
+        return rightChild;
+    }
+    return nullptr;
+}
+
+void convertToDLLHelper(Node *root, Node **head, Node **prev) {
+    if (root == nullptr) {
+        return;
+    }
+
+    convertToDLLHelper(root->left, head, prev);
+
+    if (*prev == nullptr) {
+        *head = root;
+    } else {
+        root->left = *prev;
+        (*prev)->right = root;
+    }
+    *prev = root;
+
+    convertToDLLHelper(root->right, head, prev);
+}
+
+Node *convertToDLL(Node *root) {
+    Node *head = nullptr;
+    Node *prev = nullptr;
+    convertToDLLHelper(root, &head, &prev);
+    return head;
+}
+
+void preOrderDLL(Node *head) {
+    Node *current = head;
+    while (current != nullptr) {
+        printf("%d ", current->data);
+        current = current->right;
+    }
+}
+
 
 int main() {
     Node *root;
@@ -303,38 +415,64 @@ int main() {
     insert(&root, 8);
     insert(&root, 9);
 
-    // 1. Print depth-first traversal
-    printDepthFirst(root);
-    
-    // 2. Print nodes at level k
-    int k = 2;
-    cout << endl << "Nodes at level " << k << ": ";
-    printKthLevel(root, k);
-    
-    // 3. Calculate and print the sum of all nodes
-    int sum = sumOfNodes(root);
-    cout << endl << "Sum of all nodes: " << sum << endl;
-    
-    // 4. Triple all nodes
-    triple(root);
-    cout << "Tree after tripling nodes (in-order traversal): ";
-    inorderTraversal(root);
-    cout << endl;
-    
-    // 5. Create mirror image
-    mirror(root);
-    cout << "Mirror image tree (in-order traversal): ";
-    inorderTraversal(root);
-    cout << endl;
+		// 1. Print depth-first traversal
+		printDepthFirst(root);
+		
+		// 2. Print nodes at level k
+		int k = 2;
+		cout << endl << "Nodes at level " << k << ": ";
+		printKthLevel(root, k);
+		
+		// 3. Calculate and print the sum of all nodes
+		int sum = sumOfNodes(root);
+		cout << endl << "Sum of all nodes: " << sum << endl;
+		
+		// 4. Triple all nodes
+		triple(root);
+		cout << "Tree after tripling nodes (in-order traversal): ";
+		inorderTraversal(root);
+		cout << endl;
+		
+		// 5. Create mirror image
+		mirror(root);
+		cout << "Mirror image tree (in-order traversal): ";
+		inorderTraversal(root);
+		cout << endl;
 
-    // 8. Find the parent of a given child node
-    int childData = 30;
-    Node *parent = findParent(root, childData);
-    if (parent != nullptr) {
-        cout << "Parent of node with data " << childData << " is: " << parent->data << endl;
-    } else {
-        cout << "Parent of node with data " << childData << " is not found." << endl;
-    }
-    
+		// 6. Check if the tree is balanced
+		bool balanced = isBalanced(root);
+		cout << "The tree is " << (balanced ? "balanced" : "not balanced") << endl;
+
+		// 7. Delete a node
+		int delData = 7;
+		root = delNode(root, delData);
+		cout << "Tree after deleting " << delData << " (in-order traversal): ";
+		inorderTraversal(root);
+		cout << endl;
+
+		// 8. Find the parent of a given child node
+		int childData = 30;
+		Node *parent = findParent(root, childData);
+		if (parent != nullptr) {
+			cout << "Parent of node with data " << childData << " is: " << parent->data << endl;
+		} else {
+			cout << "Parent of node with data " << childData << " is not found." << endl;
+		}
+
+		// 9. Find the children node of a given parent data.
+		int parentData = 3;
+		Node *child = findChild(root, parentData);
+		if (child != nullptr) {
+   		cout << "Child of node with data " << parentData << " is: " << child->data << endl;
+		} else {
+  		cout << "Child of node with data " << parentData << " is not found." << endl;
+		}
+
+		// 10. Convert binary tree to doubly linked list
+    	Node *headDLL = convertToDLL(root);
+    	cout << "Doubly Linked List (pre-order traversal): ";
+    	preOrderDLL(headDLL);
+    	cout << endl;
+
     return 0;
 }
